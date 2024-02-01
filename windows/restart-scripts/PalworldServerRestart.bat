@@ -15,7 +15,7 @@ if not exist "%log_directory%" (
 
 set "pal_server_path=%base_directory%\SteamCMD\steamapps\common\PalServer\PalServer.exe"
 
-set "stop_script_path=%base_scripts_directory%\restart-scripts\PalworldServerStop.bat"
+set "stop_script_path=%scripts_directory%\PalworldServerStop.bat"
 call %stop_script_path%
 
 set "update_script_path=%base_scripts_directory%\update-scripts\PalworldUpdate.bat"
