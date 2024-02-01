@@ -15,7 +15,7 @@ set "pal_server_path=%steamcmd_directory%\steamapps\common\PalServer\PalServer.e
 set "stop_script_path=..\restart-scripts\PalworldServerStop.bat"
 call %stop_script_path%
 
-echo [%DATE% %TIME%] Starting Palworld server. >> %log_file_path%
+echo [%DATE% %TIME%] Restarting Palworld server. >> %log_file_path%
 start "" "%pal_server_path%"
 
 endlocal
