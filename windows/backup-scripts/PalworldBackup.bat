@@ -1,11 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
-set "base_backup_directory=%cd%\.backups"
+set "base_directory=D:\pal-world"
+set "base_scripts_directory=%base_directory%\windows"
+set "scripts_directory=%base_scripts_directory%\backup-scripts"
+set "base_backup_directory=%scripts_directory%\.backups"
 set "backup_directory=%base_backup_directory%\%DATE%"
 
 set "log_file_name=BackupLog.txt"
-set "log_directory=%cd%\logs\%DATE%"
+set "log_directory=%scripts_directory%\logs\%DATE%"
 set "log_file_path=%log_directory%\%log_file_name%"
 
 if not exist "%log_directory%" (
@@ -40,7 +43,7 @@ if not exist "%seven_zip_path%" (
     exit /b
 )
 
-set "source_directory=..\..\SteamCMD\steamapps\common\PalServer\Pal\Saved"
+set "source_directory=%base_directory%\SteamCMD\steamapps\common\PalServer\Pal\Saved"
 
 if not exist "%source_directory%" (
     echo [%DATE% %TIME%] Backup failed because PalServer is not found. >> %log_file_path%

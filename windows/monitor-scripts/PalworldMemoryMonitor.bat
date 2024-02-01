@@ -1,8 +1,12 @@
 @echo off
 setlocal enabledelayedexpansion
 
+set "base_directory=D:\pal-world"
+set "base_scripts_directory=%base_directory%\windows"
+set "scripts_directory=%base_scripts_directory%\monitor-scripts"
+
 set "log_file_name=MemoryUsageLog.txt"
-set "log_directory=%cd%\logs\%DATE%"
+set "log_directory=%scripts_directory%\logs\%DATE%"
 set "log_file_path=%log_directory%\%log_file_name%"
 
 if not exist "%log_directory%" (
@@ -15,7 +19,7 @@ set "PAL_SERVER_PROCESS2=PalServer-Win64-Test-Cmd.exe"
 @REM MAX_MEMORY_THRESHOLD is MB.
 set "MAX_MEMORY_THRESHOLD=16384"
 
-set "restart_script_path=..\restart-scripts\PalworldServerStop.bat"
+set "restart_script_path=%base_scripts_directory%\restart-scripts\PalworldServerStop.bat"
 
 tasklist | find /i "PalServer.exe" > nul
 if %errorlevel% neq 0 (
