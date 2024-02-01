@@ -40,7 +40,7 @@ if not exist "%seven_zip_path%" (
     exit /b
 )
 
-set "source_directory=%cd%\steamapps\common\PalServer\Pal\Saved"
+set "source_directory=..\..\SteamCMD\steamapps\common\PalServer\Pal\Saved"
 
 if not exist "%source_directory%" (
     echo [%DATE% %TIME%] Backup failed because PalServer is not found. >> %log_file_path%
