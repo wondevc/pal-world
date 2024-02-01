@@ -33,7 +33,7 @@ set timestamp=!datetime:~0,4!-!datetime:~4,2!-!datetime:~6,2!_!datetime:~8,2!-!d
 set "backup_file_name=PalServer_Backup_%timestamp%.zip"
 set "backup_file_path=%backup_directory%\%backup_file_name%"
 
-set "seven_zip_path=C:\Program Files\7-Zip\7z.exe"
+set "seven_zip_path='C:\Program Files\7-Zip\7z.exe'"
 
 if not exist "%seven_zip_path%" (
     echo [%DATE% %TIME%] Backup failed because 7-Zip is not installed. >> %log_file_path%

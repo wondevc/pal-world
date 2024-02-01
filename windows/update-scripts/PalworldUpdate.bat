@@ -18,7 +18,7 @@ set "steamcmd_path=%steamcmd_directory%\steamcmd.exe"
 
 set "app_id=2394010"
 
-set "seven_zip_path=C:\Program Files\7-Zip\7z.exe"
+set "seven_zip_path='C:\Program Files\7-Zip\7z.exe'"
 
 set "steamcmd_zip_path=%scripts_directory%\steamcmd.zip"
 
