@@ -1,5 +1,5 @@
 @echo off
-setlocal
+setlocal enabledelayedexpansion
 
 set "base_backup_directory=%cd%\.backups"
 set "backup_directory=%base_backup_directory%\%DATE%"
