@@ -1,0 +1,8 @@
+# Ignore logs directory
+/*/*/logs
+
+# Ignore backups directory
+/*/*/backups/
+
+# Ignore directories starting with SteamCMD
+/SteamCMD/
