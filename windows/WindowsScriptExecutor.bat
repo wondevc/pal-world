@@ -17,7 +17,7 @@ set "flag_file_path=.\backup-flag.txt"
 
 if %backup_trigger% equ 0 (
     if not exist %flag_file_path% (
-        @REM call %backup_script_path%
+        call %backup_script_path%
         echo backup start.
     )
 )
