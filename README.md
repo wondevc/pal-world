@@ -1,3 +1,8 @@
+# What's this?
+Palworld Dedicated Server Managing script
+
+!!Support and reviews issue!!
+
 # Windows
 ## Dirs..
 - Zip : C:\Program Files\7-Zip\7z.exe
