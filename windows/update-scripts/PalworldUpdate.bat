@@ -48,5 +48,3 @@ start "" /wait %steamcmd_path% +login anonymous +app_update %app_id% validate +q
 echo [%DATE% %TIME%] Update Completed. >> %log_file_path%
 
 endlocal
-
-exit /b

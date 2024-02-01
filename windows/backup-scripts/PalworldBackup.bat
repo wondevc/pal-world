@@ -58,5 +58,3 @@ if not exist "%source_directory%" (
 echo [%DATE% %TIME%] Backup completed for name %backup_file_name%. >> %log_file_path%
 
 endlocal
-
-exit /b
