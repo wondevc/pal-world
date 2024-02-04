@@ -40,8 +40,8 @@ def backup_task():
     backup_log_file_path = backup_log_directory / BACKUP_LOG_FILE_NAME
 
     if not backup_log_file_path.exists():
-        with backup_log_file_path.open("w", encoding="utf-8") as file:
-            file.write(f"[{current_datetime}] Created Log File.")
+        with backup_log_file_path.open("a") as file:
+            print(f"[{current_datetime}] Created Log File.", file=file)
 
     backup_file_directory = BACKUP_FILE_DIR / current_date
 
