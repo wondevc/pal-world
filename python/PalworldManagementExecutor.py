@@ -1,6 +1,7 @@
 import time
 import tarfile
 import psutil
+import subprocess
 from pathlib import Path
 
 DATE_FORMMAT = '%Y-%m-%d'
@@ -14,6 +15,10 @@ MAX_MEMORY_THRESHOLD_MB = 16384
 
 BASE_DIR = Path.cwd()
 
+COMMON_DIR = BASE_DIR / 'common'
+COMMON_LOG_DIR = COMMON_DIR / 'logs'
+COMMON_LOG_FILE_NAME = 'CommonLog.txt'
+
 BACKUP_DIR = BASE_DIR / 'backup'
 BACKUP_FILE_DIR = BACKUP_DIR / 'backups'
 BACKUP_LOG_DIR = BACKUP_DIR / 'logs'
@@ -24,7 +29,9 @@ MEMORY_MONITOR_LOG_DIR = MEMORY_MONITOR_DIR / 'logs'
 MEMORY_MONITOR_LOG_FILE_NAME = 'MemoryUsageLog.txt'
 
 STEAMCMD_DIR = BASE_DIR / '..' / 'SteamCMD'
-PAL_SAVE_DIR = STEAMCMD_DIR / 'steamapps' / 'common'/ 'PalServer' / 'Pal' / 'Saved'
+PAL_SERVER_DIR = STEAMCMD_DIR / 'steamapps' / 'common'/ 'PalServer'
+PAL_SERVER_EXECUTOR_PATH = PAL_SERVER_DIR / 'PalServer.exe'
+PAL_SAVE_DIR = PAL_SERVER_DIR / 'Pal' / 'Saved'
 
 def backup_task():
     current_raw_datetime = time.localtime()
@@ -95,6 +102,28 @@ def memory_monitoring_task():
             file.write(f"[{current_datetime}] Memory usage exceeds the threshold.")
 
         # todo restart task
+
+def start_task():
+    current_raw_datetime = time.localtime()
+    current_date = time.strftime(DATE_FORMMAT, current_raw_datetime)
+    current_datetime = time.strftime(DATETIME_FORMMAT, current_raw_datetime)
+
+    start_log_directory = COMMON_LOG_DIR / current_date
+
+    if not start_log_directory.exists():
+        print("Create common log directory...")
+        start_log_directory.mkdir(parents=True)
+
+    start_log_file_path = start_log_directory / COMMON_LOG_FILE_NAME
+
+    if not start_log_file_path.exists():
+        with start_log_file_path.open("a") as file:
+            print(f"[{current_datetime}] Created Log File.", file=file)
+
+    with start_log_file_path.open('a') as file:
+        print(f"[{current_datetime}] Start Palworld.", file=file)
+
+    subprocess.call([PAL_SERVER_EXECUTOR_PATH])
 
 try:
     while True:
