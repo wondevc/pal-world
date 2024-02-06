@@ -114,6 +114,22 @@ def stop_task():
     if process2_pid is not None:
         process_kill_task(process2_pid)
 
+def process_status_check_task():
+    is_normal_status_process1 = False
+    is_normal_status_process2 = False
+
+    for proc in psutil.process_iter():
+        if PAL_SERVER_PROCESS1 in proc.name():
+            is_normal_status_process1 = True
+        if PAL_SERVER_PROCESS2 in proc.name():
+            is_normal_status_process2 = True
+        
+        if is_normal_status_process1 and is_normal_status_process2:
+            break
+
+    if is_normal_status_process1 or is_normal_status_process2:
+        stop_task()
+
 def process_kill_task(pid: int):
     save_log(
         text=f"Stop process... pid: {pid}",
