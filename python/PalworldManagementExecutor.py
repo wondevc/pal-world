@@ -36,23 +36,15 @@ PAL_SAVE_DIR = PAL_SERVER_DIR / 'Pal' / 'Saved'
 def backup_task():
     current_raw_datetime = time.localtime()
     current_date = time.strftime(DATE_FORMMAT, current_raw_datetime)
-    current_datetime = time.strftime(DATETIME_FORMMAT, current_raw_datetime)
-    backup_log_directory = BACKUP_LOG_DIR / current_date
-
-    if not backup_log_directory.exists():
-        print("Create backup log directory...")
-        backup_log_directory.mkdir(parents=True)
-
-    backup_log_file_path = backup_log_directory / BACKUP_LOG_FILE_NAME
-
-    if not backup_log_file_path.exists():
-        with backup_log_file_path.open("a") as file:
-            print(f"[{current_datetime}] Created Log File.", file=file)
 
     backup_file_directory = BACKUP_FILE_DIR / current_date
 
     if not backup_file_directory.exists():
-        print("Create backup file directory...")
+        save_log(
+            text="Create backup file directory...",
+            path=BACKUP_LOG_DIR,
+            file_name=BACKUP_LOG_FILE_NAME
+        )
         backup_file_directory.mkdir(parents=True)
 
     backup_file_name = f'PalServer_Backup_{int(time.time())}.tar.gz'
@@ -63,22 +55,6 @@ def backup_task():
             tar.add(PAL_SAVE_DIR, arcname=PAL_SAVE_DIR.name)
 
 def memory_monitoring_task():
-    current_raw_datetime = time.localtime()
-    current_date = time.strftime(DATE_FORMMAT, current_raw_datetime)
-    current_datetime = time.strftime(DATETIME_FORMMAT, current_raw_datetime)
-
-    memory_monitor_log_directory = MEMORY_MONITOR_LOG_DIR / current_date
-
-    if not memory_monitor_log_directory.exists():
-        print("Create memory log directory...")
-        memory_monitor_log_directory.mkdir(parents=True)
-
-    memory_monitor_log_file_path = memory_monitor_log_directory / MEMORY_MONITOR_LOG_FILE_NAME
-    
-    if not memory_monitor_log_file_path.exists():
-        with memory_monitor_log_file_path.open("a") as file:
-            print(f"[{current_datetime}] Created Log File.", file=file)
-
     process1_usage_memory = 0
     process2_usage_memory = 0
 
@@ -87,19 +63,25 @@ def memory_monitoring_task():
             process1_usage_memory = proc.memory_info().rss
         if PAL_SERVER_PROCESS2 in proc.name():
             process2_usage_memory = proc.memory_info().rss
-        
+
         if process1_usage_memory > 0 and process2_usage_memory > 0:
             break
-    
+
     total_usage_memory = process1_usage_memory + process2_usage_memory
     total_usage_memory_mb = int(total_usage_memory / (1024 * 1024))
 
-    with memory_monitor_log_file_path.open('a') as file:
-        print(f"[{current_datetime}] Total Memory Usage: {total_usage_memory_mb} MB", file=file)
+    save_log(
+        text=f"Total Memory Usage: {total_usage_memory_mb} MB",
+        path=MEMORY_MONITOR_LOG_DIR,
+        file_name=MEMORY_MONITOR_LOG_FILE_NAME
+    )
 
     if total_usage_memory_mb >= MAX_MEMORY_THRESHOLD_MB:
-        with memory_monitor_log_file_path.open("a", encoding="utf-8") as file:
-            file.write(f"[{current_datetime}] Memory usage exceeds the threshold.")
+        save_log(
+            text="Memory usage exceeds the threshold.",
+            path=MEMORY_MONITOR_LOG_DIR,
+            file_name=MEMORY_MONITOR_LOG_FILE_NAME
+        )
 
         # todo restart task
 
