@@ -104,26 +104,35 @@ def memory_monitoring_task():
         # todo restart task
 
 def start_task():
+    save_log(
+        text="Start Palworld.",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
+
+    subprocess.call([PAL_SERVER_EXECUTOR_PATH])
+
+def save_log(text: str, path: Path, file_name: str):
     current_raw_datetime = time.localtime()
     current_date = time.strftime(DATE_FORMMAT, current_raw_datetime)
     current_datetime = time.strftime(DATETIME_FORMMAT, current_raw_datetime)
 
-    start_log_directory = COMMON_LOG_DIR / current_date
+    log_path = path / current_date
 
-    if not start_log_directory.exists():
-        print("Create common log directory...")
-        start_log_directory.mkdir(parents=True)
+    if not log_path.exists():
+        print(f"{log_path} > [{current_datetime}] Create Log Directory...")
+        log_path.mkdir(parents=True)
+    
+    log_file_path = log_path / file_name
 
-    start_log_file_path = start_log_directory / COMMON_LOG_FILE_NAME
-
-    if not start_log_file_path.exists():
-        with start_log_file_path.open("a") as file:
+    if not log_file_path.exists():
+        with log_file_path.open('a') as file:
             print(f"[{current_datetime}] Created Log File.", file=file)
 
-    with start_log_file_path.open('a') as file:
-        print(f"[{current_datetime}] Start Palworld.", file=file)
+    print(f"[{current_datetime}] {text}")
 
-    subprocess.call([PAL_SERVER_EXECUTOR_PATH])
+    with log_file_path.open('a') as file:
+        print(f"[{current_datetime}] {text}", file=file)
 
 try:
     while True:
