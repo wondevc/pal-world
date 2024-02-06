@@ -94,6 +94,36 @@ def start_task():
 
     subprocess.call([PAL_SERVER_EXECUTOR_PATH])
 
+def stop_task():
+    backup_task()
+
+    process1_pid = None
+    process2_pid = None
+
+    for proc in psutil.process_iter():
+        if PAL_SERVER_PROCESS1 in proc.name():
+            process1_pid = proc.pid
+        if PAL_SERVER_PROCESS2 in proc.name():
+            process2_pid = proc.pid
+
+        if process1_pid is not None and process2_pid is not None:
+            break
+    
+    if process1_pid is not None:
+        process_kill_task(process1_pid)
+    if process2_pid is not None:
+        process_kill_task(process2_pid)
+
+def process_kill_task(pid: int):
+    save_log(
+        text=f"Stop process... pid: {pid}",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
+
+    parent = psutil.Process(pid)
+    parent.kill()
+
 def save_log(text: str, path: Path, file_name: str):
     current_raw_datetime = time.localtime()
     current_date = time.strftime(DATE_FORMMAT, current_raw_datetime)
