@@ -83,7 +83,7 @@ def memory_monitoring_task():
             file_name=MEMORY_MONITOR_LOG_FILE_NAME
         )
 
-        # todo restart task
+        restart_task()
 
 def start_task():
     save_log(
@@ -129,6 +129,11 @@ def process_status_check_task():
 
     if is_normal_status_process1 or is_normal_status_process2:
         stop_task()
+
+def restart_task():
+    process_status_check_task()
+
+    start_task()
 
 def process_kill_task(pid: int):
     save_log(
