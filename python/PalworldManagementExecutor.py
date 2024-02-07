@@ -2,7 +2,9 @@ import time
 import tarfile
 import psutil
 import subprocess
+import requests
 from pathlib import Path
+from zipfile import ZipFile
 
 DATE_FORMMAT = '%Y-%m-%d'
 TIME_FORMMAT = '%H-%M-%S'
@@ -12,6 +14,8 @@ PAL_SERVER_PROCESS1 = 'PalServer.exe'
 PAL_SERVER_PROCESS2 = 'PalServer-Win64-Test-Cmd.exe'
 
 MAX_MEMORY_THRESHOLD_MB = 16384
+
+STEAM_APP_ID = 2394010
 
 BASE_DIR = Path.cwd()
 
@@ -28,7 +32,10 @@ MEMORY_MONITOR_DIR = BASE_DIR / 'monitor' / 'memory'
 MEMORY_MONITOR_LOG_DIR = MEMORY_MONITOR_DIR / 'logs'
 MEMORY_MONITOR_LOG_FILE_NAME = 'MemoryUsageLog.txt'
 
+STEAMCMD_INSTALL_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
 STEAMCMD_DIR = BASE_DIR / '..' / 'SteamCMD'
+STEAMCMD_ZIP_DIR =  BASE_DIR / 'download'
+STEAMCMD_ZIP_FILE_PATH = STEAMCMD_ZIP_DIR / 'steamcmd.zip'
 PAL_SERVER_DIR = STEAMCMD_DIR / 'steamapps' / 'common'/ 'PalServer'
 PAL_SERVER_EXECUTOR_PATH = PAL_SERVER_DIR / 'PalServer.exe'
 PAL_SAVE_DIR = PAL_SERVER_DIR / 'Pal' / 'Saved'
@@ -84,6 +91,21 @@ def memory_monitoring_task():
         )
 
         restart_task()
+
+def steamcmd_install_check_task():
+    if not STEAMCMD_DIR.exists():
+        STEAMCMD_DIR.mkdir(parents=True)
+
+    if STEAMCMD_ZIP_FILE_PATH.exists():
+        STEAMCMD_ZIP_FILE_PATH.unlink()
+
+    response = requests.get(STEAMCMD_INSTALL_URL)
+
+    with STEAMCMD_ZIP_FILE_PATH.open("wb") as file:
+        file.write(response.content)
+
+    with ZipFile(str(STEAMCMD_ZIP_DIR), 'r') as zip_ref:
+        zip_ref.extractall
 
 def start_task():
     save_log(
