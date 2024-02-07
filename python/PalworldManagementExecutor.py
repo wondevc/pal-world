@@ -35,7 +35,8 @@ MEMORY_MONITOR_LOG_FILE_NAME = 'MemoryUsageLog.txt'
 STEAMCMD_INSTALL_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
 STEAMCMD_DIR = BASE_DIR / '..' / 'SteamCMD'
 STEAMCMD_ZIP_DIR =  BASE_DIR / 'download'
-STEAMCMD_ZIP_FILE_PATH = STEAMCMD_ZIP_DIR / 'steamcmd.zip'
+STEAMCMD_ZIP_FILE_NAME = 'steamcmd.zip'
+STEAMCMD_ZIP_FILE_PATH = STEAMCMD_ZIP_DIR / STEAMCMD_ZIP_FILE_NAME
 PAL_SERVER_DIR = STEAMCMD_DIR / 'steamapps' / 'common'/ 'PalServer'
 PAL_SERVER_EXECUTOR_PATH = PAL_SERVER_DIR / 'PalServer.exe'
 PAL_SAVE_DIR = PAL_SERVER_DIR / 'Pal' / 'Saved'
@@ -104,10 +105,12 @@ def steamcmd_install_check_task():
     with STEAMCMD_ZIP_FILE_PATH.open("wb") as file:
         file.write(response.content)
 
-    with ZipFile(str(STEAMCMD_ZIP_DIR), 'r') as zip_ref:
-        zip_ref.extractall
+    with ZipFile(str(STEAMCMD_ZIP_FILE_PATH), 'r') as zip_ref:
+        zip_ref.extractall(STEAMCMD_DIR)
 
 def start_task():
+    steamcmd_install_check_task()
+
     save_log(
         text="Start Palworld.",
         path=COMMON_LOG_DIR,
