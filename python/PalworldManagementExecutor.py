@@ -4,6 +4,7 @@ import psutil
 import subprocess
 import requests
 import re
+import threading
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -124,7 +125,7 @@ def start_task():
         file_name=COMMON_LOG_FILE_NAME
     )
 
-    subprocess.call([PAL_SERVER_EXECUTOR_PATH])
+    subprocess.Popen([PAL_SERVER_EXECUTOR_PATH], shell=False)
 
 def stop_task():
     backup_task()
