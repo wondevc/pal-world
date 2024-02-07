@@ -36,7 +36,7 @@ MEMORY_MONITOR_LOG_FILE_NAME = 'MemoryUsageLog.txt'
 STEAMCMD_INSTALL_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
 STEAMCMD_DIR = BASE_DIR / '..' / 'SteamCMD'
 STEAMCMD_EXE_PATH = STEAMCMD_DIR / 'steamcmd.exe'
-STEAMCMD_ZIP_DIR =  BASE_DIR / 'download'
+STEAMCMD_ZIP_DIR = BASE_DIR / 'download'
 STEAMCMD_ZIP_FILE_NAME = 'steamcmd.zip'
 STEAMCMD_ZIP_FILE_PATH = STEAMCMD_ZIP_DIR / STEAMCMD_ZIP_FILE_NAME
 PAL_SERVER_DIR = STEAMCMD_DIR / 'steamapps' / 'common'/ 'PalServer'
@@ -99,15 +99,20 @@ def steamcmd_install_check_task():
     if not STEAMCMD_DIR.exists():
         STEAMCMD_DIR.mkdir(parents=True)
 
+    if not STEAMCMD_ZIP_DIR.exists():
+        STEAMCMD_ZIP_DIR.mkdir(parents=True)
+
     if STEAMCMD_ZIP_FILE_PATH.exists():
         STEAMCMD_ZIP_FILE_PATH.unlink()
 
-    response = requests.get(STEAMCMD_INSTALL_URL)
+    with requests.get(STEAMCMD_INSTALL_URL, stream=True) as r:
+        r.raise_for_status()
 
-    with STEAMCMD_ZIP_FILE_PATH.open("wb") as file:
-        file.write(response.content)
+        with open(STEAMCMD_ZIP_FILE_PATH.resolve(), "wb") as file:
+            for chunk in r.iter_content(chunk_size=8192): 
+                file.write(chunk)
 
-    with ZipFile(str(STEAMCMD_ZIP_FILE_PATH), 'r') as zip_ref:
+    with ZipFile(STEAMCMD_ZIP_FILE_PATH, 'r') as zip_ref:
         zip_ref.extractall(STEAMCMD_DIR)
 
 def start_task():
@@ -165,6 +170,10 @@ def restart_task():
 def update_check_task():
     steamcmd_install_check_task()
 
+    if not PAL_SERVER_EXECUTOR_PATH.exists():
+        update_task()
+        return
+
     result = subprocess.run(
         f"{STEAMCMD_EXE_PATH} +login anonymous +app_info_print {STEAM_APP_ID} +quit",
         shell=True
@@ -172,7 +181,11 @@ def update_check_task():
     app_info_output = result.stdout
 
     update_pattern = re.compile(r'"timeupdated"\s*:\s*"(\d+)"')
-    match = update_pattern.search(app_info_output)
+    
+    match = None
+
+    if app_info_output:
+        match = update_pattern.search(app_info_output)
 
     if match:
         update_task()
