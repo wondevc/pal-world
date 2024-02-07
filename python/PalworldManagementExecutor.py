@@ -3,6 +3,7 @@ import tarfile
 import psutil
 import subprocess
 import requests
+import re
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -34,6 +35,7 @@ MEMORY_MONITOR_LOG_FILE_NAME = 'MemoryUsageLog.txt'
 
 STEAMCMD_INSTALL_URL = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
 STEAMCMD_DIR = BASE_DIR / '..' / 'SteamCMD'
+STEAMCMD_EXE_PATH = STEAMCMD_DIR / 'steamcmd.exe'
 STEAMCMD_ZIP_DIR =  BASE_DIR / 'download'
 STEAMCMD_ZIP_FILE_NAME = 'steamcmd.zip'
 STEAMCMD_ZIP_FILE_PATH = STEAMCMD_ZIP_DIR / STEAMCMD_ZIP_FILE_NAME
@@ -109,7 +111,7 @@ def steamcmd_install_check_task():
         zip_ref.extractall(STEAMCMD_DIR)
 
 def start_task():
-    steamcmd_install_check_task()
+    update_check_task()
 
     save_log(
         text="Start Palworld.",
@@ -160,6 +162,29 @@ def restart_task():
 
     start_task()
 
+def update_check_task():
+    steamcmd_install_check_task()
+
+    result = subprocess.run(
+        f"{STEAMCMD_EXE_PATH} +login anonymous +app_info_print {STEAM_APP_ID} +quit",
+        shell=True
+    )
+    app_info_output = result.stdout
+
+    update_pattern = re.compile(r'"timeupdated"\s*:\s*"(\d+)"')
+    match = update_pattern.search(app_info_output)
+
+    if match:
+        update_task()
+
+def update_task():
+    process_status_check_task()
+
+    subprocess.run(
+        f"{STEAMCMD_EXE_PATH} +login anonymous +app_update {STEAM_APP_ID} validate +quit",
+        shell=True
+    )
+
 def process_kill_task(pid: int):
     save_log(
         text=f"Stop process... pid: {pid}",
@@ -193,6 +218,10 @@ def save_log(text: str, path: Path, file_name: str):
         print(f"[{current_datetime}] {text}", file=file)
 
 try:
+    process_status_check_task()
+
+    start_task()
+
     while True:
         current_time = int(time.time())
 
@@ -203,8 +232,7 @@ try:
             backup_task()
 
         if current_time % 432000 == 0:
-            # TODO
-            print("update check")
+            update_check_task()
         
         time.sleep(1)
 except KeyboardInterrupt:
