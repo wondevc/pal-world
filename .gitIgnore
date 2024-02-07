@@ -6,3 +6,6 @@ backups
 
 # Ignore directories starting with SteamCMD
 SteamCMD
+
+# Ignore download directory
+download
