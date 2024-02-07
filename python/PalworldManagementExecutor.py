@@ -4,7 +4,6 @@ import psutil
 import subprocess
 import requests
 import re
-import threading
 from pathlib import Path
 from zipfile import ZipFile
 
@@ -64,6 +63,12 @@ def backup_task():
     if PAL_SAVE_DIR.exists():
         with tarfile.open(backup_file_path.resolve(), "w:gz") as tar:
             tar.add(PAL_SAVE_DIR, arcname=PAL_SAVE_DIR.name)
+        
+        save_log(
+            text=f"Backup completed for name {backup_file_name}",
+            path=BACKUP_LOG_DIR,
+            file_name=BACKUP_LOG_FILE_NAME
+        )
 
 def memory_monitoring_task():
     process1_usage_memory = 0
@@ -98,13 +103,37 @@ def memory_monitoring_task():
 
 def steamcmd_install_check_task():
     if not STEAMCMD_DIR.exists():
+        save_log(
+            text="Create steamcmd directory",
+            path=COMMON_LOG_DIR,
+            file_name=COMMON_LOG_FILE_NAME
+        )
+
         STEAMCMD_DIR.mkdir(parents=True)
 
     if not STEAMCMD_ZIP_DIR.exists():
+        save_log(
+            text="Create download directory",
+            path=COMMON_LOG_DIR,
+            file_name=COMMON_LOG_FILE_NAME
+        )
+
         STEAMCMD_ZIP_DIR.mkdir(parents=True)
 
     if STEAMCMD_ZIP_FILE_PATH.exists():
+        save_log(
+            text="remove steamcmd zip file",
+            path=COMMON_LOG_DIR,
+            file_name=COMMON_LOG_FILE_NAME
+        )
+
         STEAMCMD_ZIP_FILE_PATH.unlink()
+
+    save_log(
+        text="Install steamcmd.",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
 
     with requests.get(STEAMCMD_INSTALL_URL, stream=True) as r:
         r.raise_for_status()
@@ -164,14 +193,32 @@ def process_status_check_task():
         stop_task()
 
 def restart_task():
+    save_log(
+        text="Restart Palworld.",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
+
     process_status_check_task()
 
     start_task()
 
 def update_check_task():
+    save_log(
+        text="Start update check",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
+
     steamcmd_install_check_task()
 
     if not PAL_SERVER_EXECUTOR_PATH.exists():
+        save_log(
+            text="Not found Palworld Server executor...",
+            path=COMMON_LOG_DIR,
+            file_name=COMMON_LOG_FILE_NAME
+        )
+
         update_task()
         return
 
@@ -192,6 +239,12 @@ def update_check_task():
         update_task()
 
 def update_task():
+    save_log(
+        text="Start Palworld update.",
+        path=COMMON_LOG_DIR,
+        file_name=COMMON_LOG_FILE_NAME
+    )
+
     process_status_check_task()
 
     subprocess.run(
